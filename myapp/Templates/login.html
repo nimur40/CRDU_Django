@@ -13,6 +13,13 @@
                 <p class="text-center text-muted">
                     Login to your account
                 </p>
+                {% if messages %}
+                    {% for item in messages %}
+                        <div class="alert alert-{{ item.tags }}">
+                            {{ item }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <form method="POST">
                     {% csrf_token %}
                     <div class="mb-3">
