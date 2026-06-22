@@ -14,11 +14,9 @@
 
                 {% if messages %}
                     {% for item in messages %}
-                        {%if item.tags == "error" %}
-                            <div class="alert alert-danger rounded-3"> {{item}} </div>
-                        {% else %}
-                            <div class="alert alert-success rounded-3"> {{item}} </div>
-                        {% endif %}
+                        <div class="alert alert-{{ item.tags }} rounded-3">
+                             {{ item }}
+                        </div>
                     {% endfor %}
                 {% endif %}
 

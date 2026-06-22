@@ -4,10 +4,31 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
 
 
 
 def password_reset_request(request):
+    if request.method=="POST":
+        email = request.POST.get("email")
+        user =User.objects.filter(email=email).first()
+        if user:
+            token=default_token_generator.make_token(user)
+            uid=urlsafe_base64_encode(force_bytes(user.pk))
+            domain=get_current_site(request).domain
+            reset_link=f"http://{domain}/password_reset_confirm/{uid}/{token}"
+            #send email
+            subject = "Password reset request"
+            messages=render_to_string("password_reset_email.html",{"reset_link":reset_link})
+            send_mail(subject,messages,"nimur40@gmail.com",[email])
+            messages.successs(request,"A passwrod reset link has been sent to your mail")
+            return redirect("password_reset_done")
+            
     return render(request,"password_reset.html")
 def password_reset_confirm(request):
     return render(request,"password_reset_confirm.html")
